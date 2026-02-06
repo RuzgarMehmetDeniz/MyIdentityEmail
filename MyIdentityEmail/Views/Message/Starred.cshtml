@@ -1,0 +1,300 @@
+﻿@model List<InboxMessageVM>
+
+@{
+	ViewData["Title"] = "Starred Messages";
+	Layout = "~/Views/Message/Index.cshtml";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+
+<style>
+	body {
+		background: #f4f6f9;
+	}
+
+	.starred-wrapper {
+		padding: 20px;
+	}
+
+	.starred-card {
+		background: white;
+		border-radius: 10px;
+		box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+		overflow: hidden;
+	}
+
+	.starred-header {
+		background: #2c3e50;
+		color: white;
+		padding: 15px 20px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		border-bottom: 3px solid #34495e;
+	}
+
+	.starred-title {
+		font-size: 22px;
+		font-weight: 600;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.messages-list {
+		padding: 15px 20px;
+	}
+
+	.message-item {
+		display: flex;
+		align-items: flex-start;
+		padding: 15px 20px;
+		border-bottom: 1px solid #ecf0f1;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		background: white;
+		border-radius: 8px;
+		margin-bottom: 10px;
+	}
+
+		.message-item:hover {
+			background: #f8f9fa;
+		}
+
+	.message-avatar {
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: #f39c12;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		font-weight: 600;
+		font-size: 18px;
+		margin-right: 15px;
+		flex-shrink: 0;
+		text-transform: uppercase;
+	}
+
+	.message-content {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.message-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 6px;
+	}
+
+	.sender-name {
+		font-weight: 600;
+		font-size: 15px;
+		color: #2c3e50;
+	}
+
+	.message-date {
+		font-size: 12px;
+		color: #95a5a6;
+		display: flex;
+		align-items: center;
+		gap: 5px;
+	}
+
+	.message-subject {
+		font-size: 14px;
+		font-weight: 500;
+		color: #34495e;
+		margin-bottom: 4px;
+		display: -webkit-box;
+		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.message-preview {
+		font-size: 13px;
+		color: #7f8c8d;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		line-height: 1.4;
+	}
+
+	.message-meta {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		flex-shrink: 0;
+		margin-left: 15px;
+	}
+
+	.category-badge {
+		background: #3498db;
+		color: white;
+		padding: 5px 12px;
+		border-radius: 12px;
+		font-size: 11px;
+		font-weight: 500;
+		white-space: nowrap;
+	}
+
+	.star-button {
+		font-size: 18px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		background: none;
+		border: none;
+		padding: 3px;
+	}
+
+		.star-button.starred {
+			color: #f39c12;
+		}
+
+		.star-button:not(.starred) {
+			color: #bdc3c7;
+		}
+
+		.star-button:hover {
+			transform: scale(1.15);
+		}
+
+	/* Modal Overlay */
+	#messageModal {
+		display: none;
+		position: fixed;
+		z-index: 1050;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0,0,0,0.6);
+	}
+
+		#messageModal .modal-content {
+			background-color: #fff;
+			margin: 10% auto;
+			padding: 20px;
+			border-radius: 8px;
+			width: 90%;
+			max-width: 600px;
+			position: relative;
+		}
+
+		#messageModal .close-btn {
+			position: absolute;
+			right: 15px;
+			top: 15px;
+			font-size: 24px;
+			cursor: pointer;
+			color: #333;
+		}
+</style>
+
+<div class="starred-wrapper">
+	<div class="starred-card">
+		<div class="starred-header">
+			<h1 class="starred-title">
+				<i class="fas fa-star"></i>
+				Yıldızlı Mesajlar
+			</h1>
+			<div class="message-count">
+				@Model.Count() Mesaj
+			</div>
+		</div>
+
+		<div class="messages-list">
+			@if (!Model.Any())
+			{
+				<div class="text-center p-4 text-muted">
+					⭐ Henüz yıldızlı mesaj yok.
+				</div>
+			}
+			else
+			{
+				@foreach (var item in Model)
+				{
+					<div class="message-item" onclick="openMessage('@item.SenderName', '@item.Subject', '@item.MessageDetail', '@item.DateTime.ToString("dd.MM.yyyy HH:mm")')">
+						<div class="message-avatar">
+							@item.SenderName.Substring(0, 1).ToUpper()
+						</div>
+
+						<div class="message-content">
+							<div class="message-header">
+								<div class="sender-name">@item.SenderName</div>
+								<div class="message-date">
+									<i class="far fa-clock"></i>
+									@item.DateTime.ToString("dd.MM.yyyy HH:mm")
+								</div>
+							</div>
+							<div class="message-subject">@item.Subject</div>
+							<div class="message-preview">@item.MessageDetail</div>
+						</div>
+
+						<div class="message-meta">
+							@if (!string.IsNullOrEmpty(item.CategoryName))
+							{
+								<div class="category-badge">@item.CategoryName</div>
+							}
+							<button class="star-button @(item.IsStarred ? "starred" : "")" onclick="event.stopPropagation(); toggleStar(this, @item.MessageId)">
+								<i class="@(item.IsStarred ? "fas" : "far") fa-star"></i>
+							</button>
+						</div>
+					</div>
+				}
+			}
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div id="messageModal">
+	<div class="modal-content">
+		<span class="close-btn" onclick="closeModal()">&times;</span>
+		<h4 id="modalSender"></h4>
+		<h5 id="modalSubject"></h5>
+		<p id="modalDetail"></p>
+		<small id="modalDate" style="color:#95a5a6;"></small>
+	</div>
+</div>
+
+<script>
+	function toggleStar(button, messageId) {
+		button.classList.toggle('starred');
+		const icon = button.querySelector('i');
+		if (button.classList.contains('starred')) {
+			icon.classList.remove('far');
+			icon.classList.add('fas');
+		} else {
+			icon.classList.remove('fas');
+			icon.classList.add('far');
+		}
+	}
+
+	function openMessage(sender, subject, detail, date) {
+		document.getElementById('modalSender').innerText = sender;
+		document.getElementById('modalSubject').innerText = subject;
+		document.getElementById('modalDetail').innerText = detail;
+		document.getElementById('modalDate').innerText = date;
+
+		document.getElementById('messageModal').style.display = 'block';
+	}
+
+	function closeModal() {
+		document.getElementById('messageModal').style.display = 'none';
+	}
+
+	// Modal dışına tıklayınca kapatma
+	window.onclick = function(event) {
+		const modal = document.getElementById('messageModal');
+		if (event.target == modal) {
+			modal.style.display = "none";
+		}
+	}
+</script>

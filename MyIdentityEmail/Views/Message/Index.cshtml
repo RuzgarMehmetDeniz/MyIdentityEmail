@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    @await Component.InvokeAsync("_AdminHeadComponentPartial")
+
+    <style>
+        
+        .main-content {
+            display: block !important;
+            align-items: flex-start !important;
+            min-height: auto !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    @await Component.InvokeAsync("_AdminHeaderComponentPartial")
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- SIDEBAR -->
+            <div class="col-md-2 p-0">
+                @await Component.InvokeAsync("_AdminSidebarComponentPartial")
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="col-md-10">
+                <div class="main-content p-4">
+                    @RenderBody()
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    @await Component.InvokeAsync("_AdminScriptComponentPartial")
+
+</body>
+</html>

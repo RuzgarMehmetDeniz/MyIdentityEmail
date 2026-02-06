@@ -1,0 +1,42 @@
+﻿@model AdminSidebarViewModel
+
+<style>
+	/* Link alt çizgilerini kaldır */
+	.sidebar-section a {
+		text-decoration: none;
+	}
+
+		.sidebar-section a:hover,
+		.sidebar-section a:focus {
+			text-decoration: none;
+		}
+</style>
+
+<div class="sidebar-section">
+	<div class="sidebar-title">Mesajlar</div>
+
+	<a href="/Message/Inbox" class="sidebar-item ">
+		<div class="item-left">
+			<span>📥</span>
+			<span>Gelen Mesajlar</span>
+		</div>
+		<span class="badge">@Model.IncomingCount</span>
+	</a>
+
+	<a href="/Message/SendBox" class="sidebar-item">
+		<div class="item-left">
+			<span>📤</span>
+			<span>Gönderilen Mesajlar</span>
+		</div>
+		<span class="badge">@Model.OutgoingCount</span>
+	</a>
+
+	<a href="/Message/Starred" class="sidebar-item">
+		<div class="item-left">
+			<span>⭐</span>
+			<span>Yıldızlı Mesajlar</span>
+		</div>
+		<span class="badge">@Model.StarredCount</span>
+	</a>
+
+</div>

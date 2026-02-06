@@ -1,0 +1,192 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Message/Index.cshtml";
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Güncelle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert {
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+            input:focus, textarea:focus, select:focus {
+                outline: none;
+                border-color: #5cb85c;
+            }
+
+        .current-image {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+            .current-image img {
+                width: 120px;
+                height: 120px;
+                object-fit: cover;
+                border-radius: 50%;
+                border: 3px solid #5cb85c;
+            }
+
+        .no-image {
+            width: 120px;
+            height: 120px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .update-btn {
+            background: #5cb85c;
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+            .update-btn:hover {
+                background: #4cae4c;
+            }
+
+            .update-btn:active {
+                background: #449d44;
+            }
+
+        @@media (max-width: 600px) {
+            .form-container {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["Error"]
+            </div>
+        }
+
+        <form method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label for="Name">Ad</label>
+                <input type="text" id="Name" name="Name" value="@ViewBag.Name" placeholder="Adınızı girin" required>
+            </div>
+
+            <div class="form-group">
+                <label for="Surname">Soyad</label>
+                <input type="text" id="Surname" name="Surname" value="@ViewBag.Surname" placeholder="Soyadınızı girin" required>
+            </div>
+
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input type="email" id="Email" name="Email" value="@ViewBag.Email" placeholder="Email adresinizi girin" required>
+            </div>
+
+            <div class="form-group">
+                <label for="ImageUrl">Resim URL</label>
+
+                @if (!string.IsNullOrEmpty(ViewBag.ImageUrl))
+                {
+                    <div class="current-image">
+                        <img src="@ViewBag.ImageUrl" alt="Profil Resmi" onerror="this.parentElement.innerHTML='<div class=\'no-image\'>Resim Yüklenemedi</div>'" />
+                        <p style="margin-top: 8px; color: #666; font-size: 13px;">Mevcut profil resminiz</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="current-image">
+                        <div class="no-image">Resim Yok</div>
+                        <p style="margin-top: 8px; color: #666; font-size: 13px;">Henüz profil resmi eklemediniz</p>
+                    </div>
+                }
+
+                <input type="text" id="ImageUrl" name="ImageUrl" value="@ViewBag.ImageUrl" placeholder="Resim URL'sini girin (örn: https://example.com/image.jpg)">
+            </div>
+
+            <button type="submit" class="update-btn">Profili Güncelle</button>
+        </form>
+    </div>
+</body>
+</html>

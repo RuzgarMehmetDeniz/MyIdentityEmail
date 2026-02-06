@@ -1,0 +1,270 @@
+﻿@model MyIdentityEmail.ViewComponents.AdminViewComponent.AdminHeaderVM
+
+@{
+    var avatarUrl = !string.IsNullOrEmpty(Model.CurrentUser?.ImageUrl)
+        ? Url.Content(Model.CurrentUser.ImageUrl)
+        : Url.Content("~/assets/images/users/default.png");
+}
+
+<div class="header">
+    <div class="header-left">
+        <div class="logo">Email </div>
+        <div class="search-icon">🔍</div>
+    </div>
+
+    <div class="header-right">
+
+        <!-- USER INFO -->
+        <div class="user-info" id="userMenuToggle">
+            <span class="user-name">Merhaba, @Model.CurrentUser?.Name</span>
+            <div class="user-avatar"
+                 style="background-image:url('@avatarUrl');">
+            </div>
+        </div>
+
+   
+
+        <!-- USER DROPDOWN -->
+        <div class="user-dropdown" id="userDropdown">
+            <div class="user-header">
+                <div class="avatar"
+                     style="background-image:url('@avatarUrl');">
+                </div>
+                <div>
+                    <strong>@Model.CurrentUser?.Name</strong><br />
+                    <small>@Model.CurrentUser?.Email</small>
+                </div>
+            </div>
+            <ul>
+                <li class="" onclick="window.location.href='/Profile/Index'">
+                    Profil
+                </li>
+                <li>Bakiye</li>
+                <li>Gelen Kutusu</li>
+                <li>Ayarlar</li>
+                <li class="logout" onclick="window.location.href='/Login/UserLogin'">
+                    Çıkış
+                </li>
+            </ul>
+        </div>
+
+        <!-- NOTIFICATION DROPDOWN -->
+        <div class="notification-dropdown" id="notifDropdown">
+            @if (Model.UnreadMessages.Any())
+            {
+                <ul>
+                    @foreach (var msg in Model.UnreadMessages)
+                    {
+                        <li>
+                            <div class="notif-item">
+                                <div class="notif-avatar"
+                                     style="background-image:url('@Url.Content(
+                                                                              string.IsNullOrEmpty(msg.SenderImageUrl)
+                                                                                  ? "~/assets/images/users/default.png"
+                                                                                  : msg.SenderImageUrl
+                                                                          )');">
+                                                                       </div>
+
+                                <div class="notif-content">
+                                    <strong>@msg.SenderName</strong>
+                                    <span>
+                                        @((msg.Subject.Length > 30)
+                                                                        ? msg.Subject.Substring(0, 30) + "..."
+                                                                        : msg.Subject)
+                            </span>
+                            <small>@msg.DateTime.ToString("H:mm")</small>
+                        </div>
+                    </div>
+                </li>
+                                }
+                </ul>
+
+                <div class="notif-footer">
+                    <a href="/Message/Inbox">Tüm e-postaları gör</a>
+                </div>
+            }
+            else
+            {
+                <p class="no-msg">Yeni mesaj yok</p>
+            }
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .header {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 20px;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,.1);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .header-left {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .header-right {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        position: relative;
+    }
+
+    .user-info {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .user-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .notification-badge {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .notif-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: red;
+        color: #fff;
+        font-size: 12px;
+        border-radius: 50%;
+        padding: 2px 6px;
+    }
+
+    /* DROPDOWNS */
+    .user-dropdown,
+    .notification-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 50px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.15);
+        z-index: 1000;
+    }
+
+        .user-dropdown.show,
+        .notification-dropdown.show {
+            display: block;
+        }
+
+        .user-dropdown ul,
+        .notification-dropdown ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+            .user-dropdown ul li,
+            .notification-dropdown ul li {
+                padding: 10px;
+                cursor: pointer;
+            }
+
+                .user-dropdown ul li:hover,
+                .notification-dropdown ul li:hover {
+                    background: #f0f0f0;
+                }
+
+    .user-header {
+        display: flex;
+        gap: 10px;
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+    }
+
+    /* NOTIF ITEMS */
+    .notif-item {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .notif-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-size: cover;
+        background-position: center;
+        background-color: #eee;
+    }
+
+    .notif-content {
+        display: flex;
+        flex-direction: column;
+        font-size: .85em;
+    }
+
+        .notif-content small {
+            color: #999;
+            font-size: .75em;
+        }
+
+    .notif-footer {
+        text-align: center;
+        padding: 8px;
+        background: #fafafa;
+    }
+
+        .notif-footer a {
+            text-decoration: none;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+    .no-msg {
+        padding: 20px;
+        text-align: center;
+        color: #999;
+    }
+</style>
+
+<script>
+    const userToggle = document.getElementById('userMenuToggle');
+    const userDropdown = document.getElementById('userDropdown');
+    const notifToggle = document.getElementById('notifToggle');
+    const notifDropdown = document.getElementById('notifDropdown');
+
+    userToggle.addEventListener('click', e => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('show');
+        notifDropdown.classList.remove('show');
+    });
+
+    notifToggle.addEventListener('click', e => {
+        e.stopPropagation();
+        notifDropdown.classList.toggle('show');
+        userDropdown.classList.remove('show');
+    });
+
+    document.addEventListener('click', () => {
+        userDropdown.classList.remove('show');
+        notifDropdown.classList.remove('show');
+    });
+</script>
